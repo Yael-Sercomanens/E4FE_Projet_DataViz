@@ -16,36 +16,84 @@ io.renderers.default = 'browser'
 import os
 #os.chdir()
 
-df_raw_2019 = pd.read_csv('Donnees/registre-national-installation-production-stockage-electricite-2019.csv', sep=';', encoding='utf-8')
-df_raw_2020 = pd.read_csv('Donnees/registre-national-installation-production-stockage-electricite-2020.csv', sep=';', encoding='utf-8')
-df_raw_2021 = pd.read_csv('Donnees/registre-national-installation-production-stockage-electricite-2021.csv', sep=';', encoding='utf-8')
+df_raw_2025 = pd.read_csv('Donnees/registre-national-installation-production-stockage-electricite-2025.csv', sep=';', encoding='utf-8')
 
-df_2019 = df_raw_2019.copy()
-df_2019.insert(0, "Annee", 2019)
-df_2019.rename(columns={"energieAnnuelleInjectee": "energieAnnuelleGlissanteInjectee"}, inplace = True)
-df_2019.rename(columns={"energieAnnuelleSoutiree": "energieAnnuelleGlissanteSoutiree"}, inplace = True)
+df = df_raw_2025.copy()
 
-df_2020 = df_raw_2020.copy()
-df_2020.insert(0, "Annee", 2020)
-
-df_2021 = df_raw_2021.copy()
-df_2021.insert(0, "Annee", 2021)
-df_2021.drop(["puisMaxInstalleeDisCharge", "typeStockage"], axis = 1, inplace = True)
-
-df = pd.concat([df_2019, df_2020, df_2021], ignore_index=True)
-
+print("---------- Affichage de df.infos() ----------")
 print(df.info())
+print("---------- Fin de df.infos() ----------")
+
+print("\n---------- Affichage de df.dtypes() ----------")
 print(df.dtypes)
+print("---------- Fin de df.dtypes() ----------")
+
+# V1 - raw
+
+print("\n\n\n ---------- Debut v1 ----------")
+
+print("\n---------- Affichage de df.isna().sum() ----------")
 print(df.isna().sum())
+print("---------- Fin de df.isna().sum() ----------")
 
 sns.heatmap(df.isnull(), cbar=False)
 plt.title("Valeurs manquantes v1")
 plt.show()
 
+# V2 - on enleve les colonnes avec bcp de valeurs nan
+
+print("\n\n\n ---------- Debut v2 ----------")
+
 print(len(df[df["dateDeraccordement"].notna()].index.tolist()))
 df.drop(df[df["dateDeraccordement"].notna()].index.tolist(), axis = 0, inplace = True)
-df.drop(["energieAnnuelleGlissanteSoutiree", "puisMaxCharge", "puisMaxRacCharge", "combustible", "codeCombustible", "dateDeraccordement", "nbGroupes", "codeS3RENR"], axis = 1, inplace = True)
+df.drop(["energieAnnuelleGlissanteSoutiree", "puisMaxCharge", "puisMaxRacCharge", "combustible", "codeCombustible", "dateDeraccordement", "nbGroupes", "codeS3RENR", "typeStockage", "puisMaxInstalleeDisCharge"], axis = 1, inplace = True)
+
+print("\n---------- Affichage de df.isna().sum() ----------")
+print(df.isna().sum())
+print("---------- Fin de df.isna().sum() ----------")
 
 sns.heatmap(df.isnull(), cbar=False)
 plt.title("Valeurs manquantes v2")
 plt.show()
+
+# V3 - on enleve les colonnes qui ne concernent pas notre etude
+
+print("\n\n\n ---------- Debut v3 ----------")
+
+df.drop(["codeEICResourceObject", "codeIRIS", "codeINSEECommune", "commune", "codeEPCI", "EPCI", "codeINSEECommuneImplantation", "dateDebutVersion", "posteSource", "modeRaccordement", "codeFiliere", "codeTechnologie", "regime", "energieStockable", "capaciteReservoir", "hauteurChute", "productible", "debitMaximal", "codeGestionnaire", "gestionnaire", "energieAnnuelleGlissanteInjectee", "puisMaxInstallee", "puisMaxRac", "dateRaccordement"], axis = 1, inplace = True)
+
+print("\n---------- Affichage de df.isna().sum() ----------")
+print(df.isna().sum())
+print("---------- Fin de df.isna().sum() ----------")
+
+sns.heatmap(df.isnull(), cbar=False)
+plt.title("Valeurs manquantes v3")
+plt.show()
+
+print(len(df.index.tolist()))
+
+print("\n\n\n ---------- Debut v4 ----------")
+
+# V4 - data cleansing
+
+df.drop(df[(df["departement"].isna()) & (df["filiere"] == "Autre")].index.tolist(), axis = 0, inplace = True)
+
+print(len(df.index.tolist()))
+
+
+df.loc[df["codeDepartement"] == "978", "departement"] = "Saint-Martin"
+df.loc[df["codeDepartement"] == "978", "region"] = "Saint-Martin"
+
+# on eleve les departements nan car il n'y en a seulement 50 sur une echelle de 115 000
+
+df.drop(df[df["departement"].isna()].index.tolist(), axis = 0, inplace = True)
+
+print(len(df.index.tolist()))
+
+# on eleve maintenant les codes departement et region
+
+df.drop(["codeDepartement", "codeRegion"], axis = 1, inplace = True)
+
+print("\n---------- Affichage de df.isna().sum() ----------")
+print(df.isna().sum())
+print("---------- Fin de df.isna().sum() ----------")
