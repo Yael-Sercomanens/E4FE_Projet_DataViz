@@ -10,6 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.io as io
+import re
 io.renderers.default = 'browser'
 #io.renderers.default = 'svg'
 
@@ -45,8 +46,11 @@ plt.show()
 print("\n\n\n ---------- Debut v2 ----------")
 
 print(len(df[df["dateDeraccordement"].notna()].index.tolist()))
-df.drop(df[df["dateDeraccordement"].notna()].index.tolist(), axis = 0, inplace = True)
+df.drop(df[df["dateDeraccordement"].notna()].index.tolist(), axis = 0, inplace = True)  #drop lignes avec date de deraccordement
+df.drop(df[df["maxPuis"] == 0].index.tolist(), axis = 0, inplace = True)  # drop lignes avec maxPuis = 0 car ne contribue pas à prod
 df.drop(["energieAnnuelleGlissanteSoutiree", "puisMaxCharge", "puisMaxRacCharge", "combustible", "codeCombustible", "dateDeraccordement", "nbGroupes", "codeS3RENR", "typeStockage", "puisMaxInstalleeDisCharge"], axis = 1, inplace = True)
+df["dateMiseEnService"] = pd.to_datetime(df["dateMiseEnService"]).dt.year # juste garder les années
+
 
 print("\n---------- Affichage de df.isna().sum() ----------")
 print(df.isna().sum())
@@ -60,7 +64,7 @@ plt.show()
 
 print("\n\n\n ---------- Debut v3 ----------")
 
-df.drop(["codeEICResourceObject", "codeIRIS", "codeINSEECommune", "commune", "codeEPCI", "EPCI", "codeINSEECommuneImplantation", "dateDebutVersion", "posteSource", "modeRaccordement", "codeFiliere", "codeTechnologie", "regime", "energieStockable", "capaciteReservoir", "hauteurChute", "productible", "debitMaximal", "codeGestionnaire", "gestionnaire", "energieAnnuelleGlissanteInjectee", "puisMaxInstallee", "puisMaxRac", "dateRaccordement"], axis = 1, inplace = True)
+df.drop(["codeEICResourceObject", "codeIRIS", "codeINSEECommune", "commune", "codeEPCI", "EPCI", "codeINSEECommuneImplantation", "dateDebutVersion", "posteSource", "modeRaccordement", "codeFiliere", "codeTechnologie", "regime", "energieStockable", "capaciteReservoir", "hauteurChute", "productible", "debitMaximal", "codeGestionnaire", "gestionnaire", "energieAnnuelleGlissanteInjectee", "puisMaxInstallee", "puisMaxRac", "dateRaccordement","nomInstallation","dateMiseEnservice (format date)"], axis = 1, inplace = True)
 
 print("\n---------- Affichage de df.isna().sum() ----------")
 print(df.isna().sum())
@@ -90,7 +94,7 @@ df.drop(df[df["departement"].isna()].index.tolist(), axis = 0, inplace = True)
 
 print(len(df.index.tolist()))
 
-# on eleve maintenant les codes departement et region
+# on enleve maintenant les codes departement et region
 
 df.drop(["codeDepartement", "codeRegion"], axis = 1, inplace = True)
 
@@ -101,3 +105,11 @@ print("---------- Fin de df.isna().sum() ----------")
 print(df[(df["filiere"]=="Bioénergies")]["technologie"].unique())
 print(df[(df["filiere"]=="Solaire")]["technologie"].unique())
 print(df[(df["filiere"]=="Thermique non renouvelable")]["technologie"].unique())
+
+
+# Evaluation valeurs aberrantes pour maxPuissance
+
+print(df["maxPuis"].unique())
+sns.boxplot(y=df['maxPuis'])
+
+# enlever nom installationFAIT + garder année date installationFAIT + retirer stockageFAIT
