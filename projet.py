@@ -97,3 +97,7 @@ df.drop(["codeDepartement", "codeRegion"], axis = 1, inplace = True)
 print("\n---------- Affichage de df.isna().sum() ----------")
 print(df.isna().sum())
 print("---------- Fin de df.isna().sum() ----------")
+
+print(df[(df["filiere"]=="Bioénergies")]["technologie"].unique())
+print(df[(df["filiere"]=="Solaire")]["technologie"].unique())
+print(df[(df["filiere"]=="Thermique non renouvelable")]["technologie"].unique())
