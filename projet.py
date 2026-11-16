@@ -27,21 +27,23 @@ print("---------- Fin de df.infos() ----------")
 
 print("\n---------- Affichage de df.dtypes() ----------")
 print(df.dtypes)
-print("---------- Fin de df.dtypes() ----------")
+print("---------- Fin de df.dtypes() ----------")   # Afficher les premières infos du dataset
 
-# V1 - raw
+############################ V1 - Raw ############################
 
 print("\n\n\n ---------- Debut v1 ----------")
 
 print("\n---------- Affichage de df.isna().sum() ----------")
 print(df.isna().sum())
-print("---------- Fin de df.isna().sum() ----------")
+print("---------- Fin de df.isna().sum() ----------")   # Afficher nombre d'éléments nul par colonne
 
-sns.heatmap(df.isnull(), cbar=False)
+sns.heatmap(df.isnull(), cbar=False)                    # Tracer la heatmap
 plt.title("Valeurs manquantes v1")
 plt.show()
+############################ Fin V1 - Raw ############################
 
-# V2 - on enleve les colonnes avec bcp de valeurs nan
+
+############################ V2 - Retirer colonnes manquants valeurs ############################
 
 print("\n\n\n ---------- Debut v2 ----------")
 
@@ -50,6 +52,8 @@ df.drop(df[df["dateDeraccordement"].notna()].index.tolist(), axis = 0, inplace =
 df.drop(df[df["maxPuis"] == 0].index.tolist(), axis = 0, inplace = True)  # drop lignes avec maxPuis = 0 car ne contribue pas à prod
 df.drop(["energieAnnuelleGlissanteSoutiree", "puisMaxCharge", "puisMaxRacCharge", "combustible", "codeCombustible", "dateDeraccordement", "nbGroupes", "codeS3RENR", "typeStockage", "puisMaxInstalleeDisCharge"], axis = 1, inplace = True)
 df["dateMiseEnService"] = pd.to_datetime(df["dateMiseEnService"]).dt.year # juste garder les années
+df.drop(df[df["dateMiseEnService"] == 1900].index.tolist(), axis = 0, inplace = True)  # drop lignes avec maxPuis = 0 car ne contribue pas à prod
+
 
 
 print("\n---------- Affichage de df.isna().sum() ----------")
@@ -60,7 +64,9 @@ sns.heatmap(df.isnull(), cbar=False)
 plt.title("Valeurs manquantes v2")
 plt.show()
 
-# V3 - on enleve les colonnes qui ne concernent pas notre etude
+############################ Fin V2 - Retirer colonnes manquants valeurs ############################
+
+############################ V3 - Retirer les colonnes non pertinentes ############################
 
 print("\n\n\n ---------- Debut v3 ----------")
 
@@ -78,7 +84,9 @@ print(len(df.index.tolist()))
 
 print("\n\n\n ---------- Debut v4 ----------")
 
-# V4 - data cleansing
+############################ Fin V3 - Retirer les colonnes non pertinentes ############################
+
+############################ V4 - Derniers petits ajustements ############################
 
 df.drop(df[(df["departement"].isna()) & (df["filiere"] == "Autre")].index.tolist(), axis = 0, inplace = True)
 
@@ -88,7 +96,7 @@ print(len(df.index.tolist()))
 df.loc[df["codeDepartement"] == "978", "departement"] = "Saint-Martin"
 df.loc[df["codeDepartement"] == "978", "region"] = "Saint-Martin"
 
-# on eleve les departements nan car il n'y en a seulement 50 sur une echelle de 115 000
+# on enleve les departements nan car il n'y en a seulement 50 sur une echelle de 115 000
 
 df.drop(df[df["departement"].isna()].index.tolist(), axis = 0, inplace = True)
 
@@ -112,4 +120,4 @@ print(df[(df["filiere"]=="Thermique non renouvelable")]["technologie"].unique())
 print(df["maxPuis"].unique())
 sns.boxplot(y=df['maxPuis'])
 
-# enlever nom installationFAIT + garder année date installationFAIT + retirer stockageFAIT
+############################ V4 - Derniers petits ajustements ############################
