@@ -55,7 +55,7 @@ print("---------- Fin de df.isna().sum() ----------")
 sns.heatmap(df.isnull(), cbar=False)
 plt.title("Valeurs manquantes v2")
 plt.show()
-
+    
 # V3 - on enleve les colonnes qui ne concernent pas notre etude
 
 print("\n\n\n ---------- Debut v3 ----------")
@@ -101,3 +101,14 @@ print("---------- Fin de df.isna().sum() ----------")
 print(df[(df["filiere"]=="Bioénergies")]["technologie"].unique())
 print(df[(df["filiere"]=="Solaire")]["technologie"].unique())
 print(df[(df["filiere"]=="Thermique non renouvelable")]["technologie"].unique())
+
+print(len(df["region"].unique().tolist()))
+print(len(df["departement"].unique().tolist()))
+
+print(len(df["filiere"].unique().tolist()))
+print(df["filiere"].unique().tolist())
+print(df["technologie"].unique().tolist())
+
+print(len(df[(df["dateMiseEnService"]==df["dateMiseEnservice (format date)"])]))
+
+
