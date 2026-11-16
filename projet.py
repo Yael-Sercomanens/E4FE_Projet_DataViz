@@ -121,3 +121,5 @@ print(len(df.index.tolist()))
 print("\n ---------- Fin v4 ----------")
 
 ############################ V4 - Derniers petits ajustements ############################
+
+df.to_csv('Donnees/df_final.csv', sep=';', encoding='utf-8')
