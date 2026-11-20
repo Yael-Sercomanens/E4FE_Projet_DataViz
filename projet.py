@@ -55,6 +55,10 @@ df.drop(df[df["dateDeraccordement"].notna()].index.tolist(), axis = 0, inplace =
 print("\nNombre de lignes avec un type de stockage : " + str(len(df[df["typeStockage"].notna()].index.tolist())))           #Afficher le nombre d'éléments de stockage
 df.drop(df[df["typeStockage"].notna()].index.tolist(), axis = 0, inplace = True)                                        #Drop les lignes concernant des éléments de stockage
 
+print("\nNombre de lignes avec une technologie égale à batterie: " + str(len(df[df["technologie"] == "Batterie"].index.tolist())))           #Afficher le nombre d'éléments concernant des batteries
+df.drop(df[df["technologie"] == "Batterie"].index.tolist(), axis = 0, inplace = True)                                                   #Drop les lignes concernant des éléments de batterie
+
+
 df.drop(df[df["maxPuis"] == 0].index.tolist(), axis = 0, inplace = True)                                                #Drop les lignes avec maxPuis = 0 car ne contribue pas à prod
 df["dateMiseEnService"] = pd.to_datetime(df["dateMiseEnService"]).dt.year                                               #Homogénéiser pour uniquement garder les années
 df.drop(df[df["dateMiseEnService"] == 1900].index.tolist(), axis = 0, inplace = True)                                   #Drop les lignes done l'année est 1900 car sont des valeurs par défaut étrange
